@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Sesion modified always on
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Application definition
 
@@ -55,7 +59,7 @@ ROOT_URLCONF = 'locallibrary.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,7 +87,6 @@ DATABASES = {
 
 # Database modification
 
-import dj_database_url
 db_from_env =\
     dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi',\
         conn_max_age=500)
@@ -131,3 +134,11 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Redirect to home URL after login (Default redirects to /accounts/profile/)
+
+LOGIN_REDIRECT_URL = '/'
+
+# Email services "testing"
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -19,6 +19,10 @@ def index(request):
     # Case insensitive genres and books for a certain word
     ci_genres = Genre.objects.filter(name__icontains='Horror').count()
     ci_books = Book.objects.filter(title__icontains='Horror').count()
+
+    # Number of visits fof a certain user to the home page
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
     
     context = {
         'num_books': num_books,
@@ -27,6 +31,7 @@ def index(request):
         'num_authors': num_authors,
         'ci_genres': ci_genres,
         'ci_books': ci_books,
+        'num_visits': num_visits,
     }
 
     # Render the HTML template index.html with the data in the context variable
