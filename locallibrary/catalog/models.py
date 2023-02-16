@@ -56,6 +56,7 @@ class Book(models.Model):
     # Genre class has already been defined so we can specify the object above.
     language = models.ForeignKey(
         'Language', on_delete=models.SET_NULL, null=True)
+
     def display_genre(self):
         """Create a string for the Genre. This is required to display genre in Admin."""
         return ', '.join(genre.name for genre in self.genre.all()[:3])
@@ -90,8 +91,8 @@ class BookInstance(models.Model):
     book = models.ForeignKey('Book', on_delete=models.RESTRICT, null=True)
     imprint = models.CharField(max_length=200)
     due_back = models.DateField(null=True, blank=True)
-    borrower = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True)
+    borrower = models.ForeignKey(User,related_name='borrower', on_delete=models.SET_NULL, null=True, blank=True)
+    librarian = models.ForeignKey(User, related_name='librarian', on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def is_overdue(self):
@@ -140,3 +141,4 @@ class Author(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return '{0}, {1}'.format(self.last_name, self.first_name)
+
