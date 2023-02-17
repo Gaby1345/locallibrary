@@ -6,7 +6,7 @@ class AuthorModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        Author.objects.create(first_name='Big', last_name='Bob')
+        Author.objects.create(id=1, first_name='Big', last_name='Bob')
 
     def test_first_name_label(self):
         author = Author.objects.get(id=1)
@@ -48,5 +48,73 @@ class AuthorModelTest(TestCase):
         # This will also fail if the urlconf is not defined.
         self.assertEqual(author.get_absolute_url(), '/catalog/author/1')
 
-#assertRedirects (extra texts)
-#assertTemplateUsed
+from catalog.models import Book
+
+class BookModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        Book.objects.create(id=1, title='Realm od Dragons', isbn='0123456789012')
+
+    def test_title_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('title').verbose_name
+        self.assertEqual(field_label, 'title')
+
+    def test_author_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('author').verbose_name
+        self.assertEqual(field_label, 'author')
+
+    def test_summary_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('summary').verbose_name
+        self.assertEqual(field_label, 'summary')
+
+    def test_isbn_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('isbn').verbose_name
+        self.assertEqual(field_label, 'ISBN')
+
+    def test_genre_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('genre').verbose_name
+        self.assertEqual(field_label, 'genre')
+
+    def test_languaje_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('language').verbose_name
+        self.assertEqual(field_label, 'language')
+
+    def test_title_max_length(self):
+        book = Book.objects.get(id=1)
+        max_length = book._meta.get_field('title').max_length
+        self.assertEqual(max_length, 200)
+
+    def test_isbn_max_length(self):
+        book = Book.objects.get(id=1)
+        max_length = book._meta.get_field('isbn').max_length
+        self.assertEqual(max_length, 13)
+
+    def test_get_absolute_url(self):
+        book = Book.objects.get(id=1)
+        # This will also fail if the urlconf is not defined.
+        self.assertEqual(book.get_absolute_url(), '/catalog/book/1')
+
+from catalog.models import Genre
+
+class GenreModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        Genre.objects.create(id=1, name='Fantasy')
+
+    def test_name_label(self):
+        genre = Genre.objects.get(id=1)
+        field_label = genre._meta.get_field('name').verbose_name
+        self.assertEqual(field_label, 'name')
+
+    def test_isbn_max_length(self):
+        genre = Genre.objects.get(id=1)
+        max_length = genre._meta.get_field('name').max_length
+        self.assertEqual(max_length, 200)

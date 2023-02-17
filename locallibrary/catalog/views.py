@@ -68,7 +68,7 @@ class BookDetailView(generic.DetailView):
 
 class AuthorListView(generic.ListView):
     model = Author
-    paginate_by = 10
+    paginate_by = 3
 
 
 class AuthorDetailView(generic.DetailView):
@@ -79,7 +79,7 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing books on loan to current user."""
     model = BookInstance
     template_name = 'catalog/bookinstance_list_borrowed_user.html'
-    paginate_by = 10
+    paginate_by = 3
 
     def get_queryset(self):
         return (
@@ -94,7 +94,7 @@ class LoanedBooksByLibrarianListView(PermissionRequiredMixin, generic.ListView):
     """Generic class-based view listing books on loan to current user."""
     model = BookInstance
     template_name = 'catalog/bookinstance_list_borrowed_librarian.html'
-    paginate_by = 10
+    paginate_by = 3
     permission_required = 'catalog.can_mark_returned'
     def get_queryset(self):
         return (
