@@ -30,12 +30,12 @@ class AuthorListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/author_list.html')
 
-    def test_pagination_is_three(self):
+    def test_pagination_is_ten(self):
         response = self.client.get(reverse('authors'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
-        self.assertEqual(len(response.context['author_list']), 3)
+        self.assertEqual(len(response.context['author_list']), 10)
 
     def test_lists_all_authors(self):
         # Get second page and confirm it has (exactly) remaining 3 items
@@ -165,10 +165,11 @@ class RenewBookInstancesViewTest(TestCase):
         # Create a user
         test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
         test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
+        s_user = User.objects.create_superuser(username='super1', password='super1')
 
         test_user1.save()
         test_user2.save()
-
+        s_user.save()
         # Give test_user2 permission to renew books.
         permission = Permission.objects.get(name='Set book as returned')
         test_user2.user_permissions.add(permission)
@@ -199,6 +200,7 @@ class RenewBookInstancesViewTest(TestCase):
             due_back=return_date,
             borrower=test_user1,
             status='o',
+            librarian=s_user,
         )
 
         # Create a BookInstance object for test_user2
@@ -209,6 +211,27 @@ class RenewBookInstancesViewTest(TestCase):
             due_back=return_date,
             borrower=test_user2,
             status='o',
+            librarian=s_user,
+        )
+
+        return_date = datetime.date.today() + datetime.timedelta(days=5)
+        self.test_bookinstance3 = BookInstance.objects.create(
+            book=test_book,
+            imprint='Unlikely Imprint, 2016',
+            due_back=return_date,
+            borrower=test_user2,
+            status='o',
+            librarian=s_user,
+        )
+
+        return_date = datetime.date.today() + datetime.timedelta(days=5)
+        self.test_bookinstance4 = BookInstance.objects.create(
+            book=test_book,
+            imprint='Unlikely Imprint, 2016',
+            due_back=return_date,
+            borrower=test_user2,
+            status='o',
+            librarian=s_user,
         )
 
     def test_redirect_if_not_logged_in(self):
@@ -278,3 +301,123 @@ class RenewBookInstancesViewTest(TestCase):
         response = self.client.post(reverse('renew-book-librarian', kwargs={'pk': self.test_bookinstance1.pk}), {'renewal_date': invalid_date_in_future})
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'renewal_date', 'Invalid date - renewal more than 4 weeks ahead')
+
+    def test_pagination_is_three(self):
+        login = self.client.login(username='super1', password='super1')
+        # Now change all books to be on loan
+        books = BookInstance.objects.all()[:10]
+        for book in books:
+            book.status = 'o'
+            book.save()
+        response = self.client.get(reverse('all-borrowed'))
+        # Check our user is logged in
+        self.assertEqual(str(response.context['user']), 'super1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertEqual(len(response.context['bookinstance_list']), 3)
+
+class BookDetailViewTest(TestCase):
+    def setUp(self):
+        # Create a user
+        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        s_user = User.objects.create_superuser(username='super1', password='super1')
+
+        test_user1.save()
+        s_user.save()
+
+        # Create a book
+        test_author = Author.objects.create(first_name='John', last_name='Smith')
+        test_genre = Genre.objects.create(name='Fantasy')
+        test_language = Language.objects.create(name='English')
+        test_book = Book.objects.create(
+            id=1,
+            title='Book Title',
+            summary='My book summary',
+            isbn='ABCDEFG',
+            author=test_author,
+            language=test_language,
+        )
+
+        # Create genre as a post-step
+        genre_objects_for_book = Genre.objects.all()
+        test_book.genre.set(genre_objects_for_book) # Direct assignment of many-to-many types not allowed.
+        test_book.save()
+
+        # Create a BookInstance object for test_user1
+        return_date = datetime.date.today() + datetime.timedelta(days=5)
+        self.test_bookinstance1 = BookInstance.objects.create(
+            book=test_book,
+            imprint='Unlikely Imprint, 2016',
+            due_back=return_date,
+            borrower=test_user1,
+            status='o',
+            librarian=s_user,
+        )
+
+    def test_HTTP404_for_invalid_book(self):
+        # unlikely UID to match our book!
+        test_uid = uuid.uuid4()
+        response = self.client.get(reverse('book-detail', kwargs={'pk':int(test_uid)}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_uses_correct_template(self):
+        test_book = Book.objects.get(id=1)
+        response = self.client.get(reverse('book-detail', kwargs={'pk':1}))
+        self.assertEqual(response.status_code, 200)
+
+        # Check we used correct template
+        self.assertTemplateUsed(response, 'catalog/book_detail.html')  
+
+
+class AuthorCreateViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        test_user2 = User.objects.create_user(username='testuser2', password='1X<ISRUkw+tuK')
+        s_user = User.objects.create_superuser(username='super1', password='super1')
+
+        permission = Permission.objects.get(name='Set book as returned')
+        test_user2.user_permissions.add(permission)
+        
+        test_user1.save()
+        test_user2.save()
+        s_user.save()
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(reverse('author-create'))
+        self.assertRedirects(response, '/accounts/login/?next=/catalog/author/create/')
+
+    def test_forbidden_if_logged_in_but_not_correct_permission(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_logged_in_with_permission(self):
+        login = self.client.login(username='testuser2', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_form_date_of_death_initially_set_to_expected_date(self):
+        login = self.client.login(username='super1', password='super1')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.context['form']['date_of_death'].initial, '12/10/2016')
+        #self.assertEqual(list(User.objects.get(username='super1').get_all_permissions())[35:], '12/10/2016')
+
+
+    def test_uses_correct_template(self):
+        login = self.client.login(username='super1', password='super1')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/author_form.html')
+
+    def test_redirects_to_detail_view_on_success(self):
+        login = self.client.login(username='super1', password='super1')
+        user_args ={'date_of_birth': '01/01/2000', 'first_name':'Paco', 'last_name':'Palotes'}
+        response = self.client.post(reverse('author-create'), user_args)
+        self.assertRedirects(response, reverse('author-detail', kwargs={'pk':Author.objects.last().id}))
+
+# class AuthorCreate(CreateView):
+#     model = Author
+#     fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+#     initial = {'date_of_death': '11/06/2020'}
