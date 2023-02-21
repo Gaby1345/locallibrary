@@ -151,9 +151,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if 'TESTING' in os.environ:
-    STATIC_URL = '/static/'
-else:
+STATIC_URL = '/static/'
+RENDER_VAR = os.getenv('RENDER_VAR')
+
+if RENDER_VAR == 1:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
