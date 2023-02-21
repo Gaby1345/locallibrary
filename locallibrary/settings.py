@@ -153,8 +153,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-if 'TESTING' == 0 in os.environ:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# if 'TESTING' not in os.environ:
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+if 'TESTING' not in os.environ:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
