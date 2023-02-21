@@ -31,7 +31,9 @@ SECRET_KEY = '878dd4ab634acaf3627837f6eeac0e0b'
 # DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
 DEBUG = 1
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://locallibrary-cae9.onrender.com',
+                 '127.0.0.1',
+                 'localhost', ]
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # Sesion modified always on
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalog.apps.CatalogConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -107,7 +110,7 @@ if 'TESTING' in os.environ:
 else:
     db_from_env = dj_database_url.config(
         default='postgres://Gaby1345:xNfHcUmnh58p@ep-orange-river\
-        -922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
+-922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
 
 DATABASES['default'].update(db_from_env)
 
