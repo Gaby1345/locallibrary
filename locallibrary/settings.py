@@ -29,7 +29,11 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-+@=8i)r+_bht@e
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append('RENDER_EXTERNAL_HOSTNAME')
 
 # Sesion modified always on
 SESSION_SAVE_EVERY_REQUEST = True
@@ -92,6 +96,15 @@ DATABASES = {
 db_from_env =\
     dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi',
                            conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
+# To run the tests: export TESTING=1, or to use the app: unset TESTING
+# To see the current value just type echo $TESTING
+if 'TESTING' in os.environ:
+    db_from_env = dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi', conn_max_age=50)
+else:
+    db_from_env = dj_database_url.config(default='postgres://Gaby1345:xNfHcUmnh58p@ep-orange-river-922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
+
 DATABASES['default'].update(db_from_env)
 
 # Password validation
