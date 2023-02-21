@@ -23,17 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-+@=8i)r+_bht@e!z7hmh*-7kb3pwwho@3sez3f6iw94p5fvqpx'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-+@=8i)r+_bht@e!z7hmh*-7kb3pwwho@3sez3f6iw94p5fvqpx')
+#SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-+@=8i)r+_bht@e!z7hmh*-7kb3pwwho@3sez3f6iw94p5fvqpx')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
 
-ALLOWED_HOSTS = ['*']
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append('RENDER_EXTERNAL_HOSTNAME')
+#ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # Sesion modified always on
 SESSION_SAVE_EVERY_REQUEST = True
@@ -93,10 +92,10 @@ DATABASES = {
 
 # Database modification
 
-db_from_env =\
-    dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi',
-                           conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+#db_from_env =\
+#    dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi',
+#                          conn_max_age=500)
+#DATABASES['default'].update(db_from_env)
 
 # To run the tests: export TESTING=1, or to use the app: unset TESTING
 # To see the current value just type echo $TESTING
