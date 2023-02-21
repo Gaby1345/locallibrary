@@ -22,17 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-+@=8i)r+_bht@e!z7hmh*-7kb3pwwho@3sez3f6iw94p5fvqpx'
-#SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-+@=8i)r+_bht@e!z7hmh*-7kb3pwwho@3sez3f6iw94p5fvqpx')
-SECRET_KEY = os.getenv('SECRET_KEY')
+# SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = '878dd4ab634acaf3627837f6eeac0e0b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+# DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+# DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+DEBUG = 1
 
-#ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # Sesion modified always on
 SESSION_SAVE_EVERY_REQUEST = True
@@ -93,17 +93,21 @@ DATABASES = {
 
 # Database modification
 
-#db_from_env =\
+# db_from_env =\
 #    dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi',
 #                          conn_max_age=500)
-#DATABASES['default'].update(db_from_env)
+# DATABASES['default'].update(db_from_env)
 
 # To run the tests: export TESTING=1, or to use the app: unset TESTING
 # To see the current value just type echo $TESTING
 if 'TESTING' in os.environ:
-    db_from_env = dj_database_url.config(default='postgres://alumnodb:alumnodb@localhost:5432/psi', conn_max_age=50)
+    db_from_env = dj_database_url.config(
+        default='postgres://alumnodb:alumnodb@localhost:5432/psi',
+        conn_max_age=50)
 else:
-    db_from_env = dj_database_url.config(default='postgres://Gaby1345:xNfHcUmnh58p@ep-orange-river-922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
+    db_from_env = dj_database_url.config(
+        default='postgres://Gaby1345:xNfHcUmnh58p@ep-orange-river\
+        -922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
 
 DATABASES['default'].update(db_from_env)
 
@@ -112,16 +116,20 @@ DATABASES['default'].update(db_from_env)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.\
+        UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.\
+        MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.\
+        CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.\
+        NumericPasswordValidator',
     },
 ]
 
@@ -144,8 +152,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if 'TESTING' not in os.environ:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.\
+    CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
