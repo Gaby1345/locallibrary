@@ -10,7 +10,7 @@ you will do that in an empty local database for testing purposes, we recommend t
 steps before testing:
 
 export TESTING=1
-python3 populate_catalog.py (with an empty database already created)
+(with an empty database already created, uncomment populate_catalog.py line in the script file)
 sh build.sh
 
 We suposed that the database in neon should not be populated again as we did it when creating it, 
