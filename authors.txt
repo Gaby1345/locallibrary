@@ -1,0 +1,36 @@
+Gabriela Trabajo de Rada
+Guillermo de Andrés Pérez
+Pair 3
+
+EXTRA INSTRUCTIONS FOR DATABASE POPULATION
+
+As we were not able to include populate_catalog.py in the initialization script because of
+primary keys duplication when adding new books in the different databases, and we think that
+you will do that in an empty local database for testing purposes, we recommend the following
+steps before testing:
+
+export TESTING=1
+python3 populate_catalog.py (with an empty database already created)
+sh build.sh
+
+We suposed that the database in neon should not be populated again as we did it when creating it, 
+and when we tried to apply populate later, it was just adding copies and copies but the books were
+not being included properly because of the ISBN duplication as primary key, so it had no sense to include 
+the mentioned file in the build.sh script in this case also.
+
+We hope this was the right decision as we tried to fix it in so many ways.
+
+RENDER URL
+
+https://locallibrary-cae9.onrender.com/
+
+(Neon database users)
+Admin user - alumnodb  (password: alumnodb)
+Librarian - willygap  (password: coBcu0-bycjew-nopdih)
+Library member - gaby1345  (password: nUpnoq-hirhec-vuqdi8)
+
+CREATE SUPERUSER SCRIPT
+
+Also, this functionality appears in the coverage of the tests, but as it is not part of the application
+itself, we did not know if it was right to test it. All the tests from the application and challenges
+included are 100% passed, hope it is fine.
