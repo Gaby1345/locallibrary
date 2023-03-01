@@ -110,6 +110,8 @@ else:
     db_from_env = dj_database_url.config(
         default='postgres://Gaby1345:xNfHcUmnh58p@ep-orange-river\
 -922838.eu-central-1.aws.neon.tech/neondb', conn_max_age=500)
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifest\
+StaticFilesStorage'
 
 DATABASES['default'].update(db_from_env)
 
@@ -158,7 +160,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
